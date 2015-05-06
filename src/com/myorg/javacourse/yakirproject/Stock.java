@@ -1,9 +1,8 @@
 package com.myorg.javacourse.yakirproject;
 import java.util.Date;
-import java.util.Calendar;
 
-public class Stock 
-{	
+public class Stock {
+	//----Private
     private String symbol;
     private float ask, bid;
     private Date date;
@@ -15,9 +14,8 @@ public class Stock
     private final static int REMOVE = 2;
     private final static int HOLD = 3;
     
-
-	public Stock(String symbol, float ask, float bid, Date date)
-	{
+    //----Public
+	public Stock(String symbol, float ask, float bid, Date date){
 	    this.symbol = symbol;
 	    this.ask = ask;
 	    this.bid = bid;
@@ -88,6 +86,16 @@ public class Stock
 
 	public static int getHold() {
 		return HOLD;
+	}
+	
+	//----Copy ctor for stock obj	
+	public Stock (Stock stk2cpy){
+		this.setSymbol(stk2cpy.getSymbol()); 
+		this.setAsk(stk2cpy.getAsk()); 
+		this.setBid(stk2cpy.getBid()); 
+		this.setDate(stk2cpy.getDate());
+		this.setRecommendation(stk2cpy.getRecommendation());
+		this.setStockQuantity(stk2cpy.getStockQuantity());
 	}
 
 }

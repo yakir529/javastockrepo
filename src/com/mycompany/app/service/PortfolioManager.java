@@ -16,7 +16,7 @@ public class PortfolioManager {
 		Stock stockB = new Stock("ALL", 5.78f, 5.5f, cal.getTime());
 		Stock stockC = new Stock("CAAS", 32.2f, 31.5f, cal.getTime());
 		
-		portfolio.setTitle("Portfolio_1");
+		portfolio.setTitle("Portfolio#1");
 		portfolio.addStock(stockA);
 		portfolio.addStock(stockB);
 		portfolio.addStock(stockC);

@@ -3,11 +3,13 @@ package com.mycompany.app.model;
 import com.myorg.javacourse.yakirproject.Stock;
 
 public class Portfolio {
+	//----Private
 	private String title;
 	private final static int MAX_PORTFOLIO_SIZE = 5;
 	private Stock[] stocks;
 	private int portfolioSize = 0;
 	
+	//----Public
 	public String getTitle() {
 		return title;
 	}
@@ -24,16 +26,18 @@ public class Portfolio {
 		return stocks;
 	}
 	
-	public void setStocks(Stock[] stocks) {
-		this.stocks = stocks;
+	//----Create a new arr of stocks in size of max size
+	public void setStocks() {
+		this.stocks = new Stock[getMaxPortfolioSize()];
 	}
 	
 	public Portfolio(){
 		stocks = new Stock[MAX_PORTFOLIO_SIZE];
 	}
 	
-	public void addStock(Stock stock){
-		stocks[portfolioSize] = stock;
+	//----Add a new stock with the same ptr to instance in memory of stk2Add
+	public void addStock(Stock stk2Add){
+		stocks[portfolioSize] = stk2Add;
 		portfolioSize++;
 	}
 	
@@ -45,6 +49,31 @@ public class Portfolio {
 		return rply;
 	}
 	
+	public int getPortfolioSize(){
+		return portfolioSize;
+	}
+	
+	//----Copy ctor for portfolio obj
+	public Portfolio (Portfolio port2cpy){
+		this.setTitle(port2cpy.getTitle());
+		this.setStocks();
+		for (int i=0; i<port2cpy.getPortfolioSize(); i++){
+			Stock tempStock = new Stock(port2cpy.stocks[i]);
+			this.addStock(tempStock); 
+		}
+	}
+	
+	//----Removes the first value in the stocks arr
+	public void removeFirstStockOnly (){
+		if (this.portfolioSize > 0){
+			for (int i=1 ; i<=this.portfolioSize ; i++){
+				this.stocks[i-1] = this.stocks[i];
+			}
+			this.portfolioSize--;
+		}
+	}
+	
+
 }
 
 
