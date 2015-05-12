@@ -1,15 +1,107 @@
 package com.mycompany.app.model;
 
-import com.myorg.javacourse.yakirproject.Stock;
+import java.util.Calendar;
 
 public class Portfolio {
-	//----Private
-	private String title;
+	//----/ Private Const
 	private final static int MAX_PORTFOLIO_SIZE = 5;
+	
+	//----/ Private
+	private String title;
 	private Stock[] stocks;
 	private int portfolioSize = 0;
+	private float balance = 0;
 	
-	//----Public
+	//----/ Public
+	public enum ALGO_RECOMMENDATION {BUY,SELL,REMOVE,HOLD}
+	//--------/ Ctors
+	public Portfolio(){
+		stocks = new Stock[MAX_PORTFOLIO_SIZE];
+	}
+	
+	public Portfolio (Portfolio port2cpy){
+		setTitle(port2cpy.getTitle());
+		setStocks();
+		for (int i=0; i<port2cpy.getPortfolioSize(); i++){
+			Stock tempStock = new Stock(port2cpy.stocks[i]);
+			addStock(tempStock); 
+		}
+	}
+	
+	//----/ Methods
+	public boolean createInstanceAndBuyNewStock(String newSymbol, float newAsk, float newBid, int[] newDate, int newQuantity){
+		Calendar cal = Calendar.getInstance();
+		cal.set(newDate[0],newDate[1],newDate[2]);//----Date format-> {yyyy,dd,mm}
+		Stock stk = new Stock(newSymbol, newAsk, newBid, cal.getTime());
+		return buyStock(stk,newQuantity);
+	}
+	
+	public void addStock(Stock stk2Add){
+		if (!ifStockExists(stk2Add.getSymbol())){
+			stk2Add.setStockQuantity(0);
+			stocks[getPortfolioSize()] = stk2Add;
+			portfolioSize++;
+		}else System.out.println("Can’t add new stock, portfolio can have only "+MAX_PORTFOLIO_SIZE+" stocks.");
+	}
+	
+	public boolean removeStock (String smbl){
+		if (ifStockExists(smbl)){
+			for (int i=1; i<=getPortfolioSize(); i++){
+				if (stocks[i-1].getSymbol().equals(smbl)){
+					sellStock(smbl, -1);
+					getStocks()[i-1] = new Stock(getStocks()[getPortfolioSize()-1]);
+					portfolioSize--;
+					break;
+				}
+			}return true;
+		}else return false;
+	}
+	
+	public void updateBalance(float amount){
+		setBalance(getBalance()+amount);
+		if (getBalance()< 0) setBalance(0);
+	}
+	
+	public boolean ifStockExists(String smbl){
+		if (getPortfolioSize() > 0){
+			for (int i=0; i < getPortfolioSize(); i++){
+				if (getStocks()[i].getSymbol().equals(smbl))return true;
+			}
+		}return false;
+	}
+	
+	public boolean sellStock(String smbl, int quantity){
+		for (int i=0; i < getPortfolioSize(); i++){
+			if (getStocks()[i].getSymbol().equals(smbl)){//----finding the stock
+				if (quantity == -1) quantity = getStocks()[i].getStockQuantity();//----if sell all quantity
+				if ((getStocks()[i].getStockQuantity() >= quantity) && (quantity > 0)){//----if quantity is valid
+					updateBalance(getStocks()[i].getStockQuantity()*getStocks()[i].getBid());//----update balance
+					getStocks()[i].setStockQuantity(getStocks()[i].getStockQuantity() - quantity);//----update quantity
+					//if (this.getStocks()[i].getStockQuantity() == 0) this.removeStock(smbl);
+					return true;
+				}else System.out.println("Not enough stocks to sell");
+				break;
+			}
+		}return false;
+	}
+	
+	public boolean buyStock(Stock stk, int quantity){
+		if ((getBalance() < stk.getAsk()) || ((getBalance()/stk.getAsk() < quantity))){//---- if user don't have money
+			System.out.println("Not enough balance to complete purchase.");
+		}else {
+			if (quantity == -1) quantity = (int)(getBalance()/stk.getAsk());
+			for (int i=0; i<=getPortfolioSize(); i++){
+				if (i == getPortfolioSize()) addStock(stk);//----if stocks arr is empty or stock not found
+				if (getStocks()[i].getSymbol().equals(stk.getSymbol())){
+					updateBalance((quantity*stk.getAsk())*(-1));
+					getStocks()[i].setStockQuantity(getStocks()[i].getStockQuantity() + quantity);
+					return true;
+				}
+			}
+		}return false;
+	}
+
+	//--------/ Getters & Setters
 	public String getTitle() {
 		return title;
 	}
@@ -26,26 +118,18 @@ public class Portfolio {
 		return stocks;
 	}
 	
-	//----Create a new arr of stocks in size of max size
-	public void setStocks() {
-		this.stocks = new Stock[getMaxPortfolioSize()];
-	}
-	
-	public Portfolio(){
-		stocks = new Stock[MAX_PORTFOLIO_SIZE];
-	}
-	
-	//----Add a new stock with the same ptr to instance in memory of stk2Add
-	public void addStock(Stock stk2Add){
-		stocks[portfolioSize] = stk2Add;
-		portfolioSize++;
+	public void setStocks() {//----/ Create a new arr of stocks in size of max size
+		stocks = new Stock[getMaxPortfolioSize()];
 	}
 	
 	public String getHtmlString(){
-		String rply = "<h1>"+ title +"</h1>";
+		String rply = "<h1>Title of portfolio: "+ title +"</h1>";
 		for (int i=0; i<portfolioSize; i++){
-			rply = rply + stocks[i].getHtmlDescription();
+			rply += stocks[i].getHtmlDescription();
 		}
+		//rply += "<portfolio_value><a>portfolio value: "+this.getTotalValue()+", </a><total_stocks_value><a>total stocks value: "+this.getStocksValue()+", </a><balance><a>balance: "+this.getBalance()+"</a>";
+		rply += "<a>portfolio value: "+getTotalValue()+", total stocks value: "+getStocksValue()+", balance: "+getBalance()+"</a>";
+		
 		return rply;
 	}
 	
@@ -53,27 +137,24 @@ public class Portfolio {
 		return portfolioSize;
 	}
 	
-	//----Copy ctor for portfolio obj
-	public Portfolio (Portfolio port2cpy){
-		this.setTitle(port2cpy.getTitle());
-		this.setStocks();
-		for (int i=0; i<port2cpy.getPortfolioSize(); i++){
-			Stock tempStock = new Stock(port2cpy.stocks[i]);
-			this.addStock(tempStock); 
-		}
+	public float getBalance() {
+		return balance;
 	}
 	
-	//----Removes the first value in the stocks arr
-	public void removeFirstStockOnly (){
-		if (this.portfolioSize > 0){
-			for (int i=1 ; i<=this.portfolioSize ; i++){
-				this.stocks[i-1] = this.stocks[i];
-			}
-			this.portfolioSize--;
-		}
+	public void setBalance(float balance) {
+		this.balance = balance;
 	}
-	
 
+	public float getStocksValue(){
+		float sum = 0;
+		for (int i=0; i<getPortfolioSize(); i++){
+			sum += (getStocks()[i].getAsk()*getStocks()[i].getStockQuantity());
+		}return sum;
+	}
+	
+	public float getTotalValue(){return getStocksValue() + getBalance();}
+	
+	
 }
 
 

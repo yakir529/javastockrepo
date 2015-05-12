@@ -1,27 +1,44 @@
-package com.myorg.javacourse.yakirproject;
+package com.mycompany.app.model;
 import java.util.Date;
 
+import com.mycompany.app.model.Portfolio.ALGO_RECOMMENDATION;
+
 public class Stock {
+	//----Private Const
+	/*----Ex 7 demand
+    private final static int BUY = 0;
+    private final static int SELL = 1;
+    private final static int REMOVE = 2;
+    private final static int HOLD = 3;
+    */
 	//----Private
     private String symbol;
     private float ask, bid;
     private Date date;
     
-    private int recommendation;
     private int stockQuantity;
-    private final static int BUY = 0;
-    private final static int SELL = 1;
-    private final static int REMOVE = 2;
-    private final static int HOLD = 3;
+    private ALGO_RECOMMENDATION recommendation;
     
     //----Public
-	public Stock(String symbol, float ask, float bid, Date date){
+	//--------Ctors
+    public Stock(String symbol, float ask, float bid, Date date){
 	    this.symbol = symbol;
 	    this.ask = ask;
 	    this.bid = bid;
 	    this.date = date;
+	    this.stockQuantity = 0;
+	}
+    
+	public Stock (Stock stk2cpy){
+		this.setSymbol(stk2cpy.getSymbol()); 
+		this.setAsk(stk2cpy.getAsk()); 
+		this.setBid(stk2cpy.getBid()); 
+		this.setDate(stk2cpy.getDate());
+		this.setRecommendation(stk2cpy.getRecommendation());
+		this.setStockQuantity(stk2cpy.getStockQuantity());
 	}
 
+    //--------Getters & Setters
 	public String getSymbol() {
 		return symbol;
 	}
@@ -48,19 +65,19 @@ public class Stock {
 	}
 		
 	@SuppressWarnings("deprecation")
-	public String getHtmlDescription()
-	{
+	public String getHtmlDescription(){
 	    return "<b>Symbol</b>: " + getSymbol() +
 	    	   ", <b>Ask</b>: " + getAsk() +
 	    	   ", <b>Bid</b>: " + getBid() +
-		       ", <b>Date</b>: " + getDate().getMonth() +  "/" + getDate().getDate() + "/"  +(1900 + getDate().getYear())+"<br>";
+	    	   ", <b>Quantity</b>: " + getStockQuantity() +
+		       ", <b>Date</b>: " + (getDate().getMonth()+1) +  "/" + getDate().getDate() + "/"  +(1900 + getDate().getYear())+"<br>";
 	}
 
-	public int getRecommendation() {
+	public ALGO_RECOMMENDATION getRecommendation() {
 		return recommendation;
 	}
 
-	public void setRecommendation(int recommendation) {
+	public void setRecommendation(ALGO_RECOMMENDATION recommendation) {
 		this.recommendation = recommendation;
 	}
 
@@ -71,7 +88,8 @@ public class Stock {
 	public void setStockQuantity(int stockQuantity) {
 		this.stockQuantity = stockQuantity;
 	}
-
+	
+	/*
 	public static int getBuy() {
 		return BUY;
 	}
@@ -87,15 +105,6 @@ public class Stock {
 	public static int getHold() {
 		return HOLD;
 	}
+	*/
 	
-	//----Copy ctor for stock obj	
-	public Stock (Stock stk2cpy){
-		this.setSymbol(stk2cpy.getSymbol()); 
-		this.setAsk(stk2cpy.getAsk()); 
-		this.setBid(stk2cpy.getBid()); 
-		this.setDate(stk2cpy.getDate());
-		this.setRecommendation(stk2cpy.getRecommendation());
-		this.setStockQuantity(stk2cpy.getStockQuantity());
-	}
-
 }

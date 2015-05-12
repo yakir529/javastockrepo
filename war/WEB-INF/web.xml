@@ -6,7 +6,7 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
 http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	<servlet>
 		<servlet-name>Yakir_NASDAQ_Project</servlet-name>
-		<servlet-class>com.myorg.javacourse.yakirproject.Yakir_NASDAQ_ProjectServlet</servlet-class>
+		<servlet-class>com.mycompany.stock.servlet.Yakir_NASDAQ_ProjectServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Yakir_NASDAQ_Project</servlet-name>
@@ -15,7 +15,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	
 	<servlet>
 		<servlet-name>MathServlet</servlet-name>
-		<servlet-class>com.myorg.javacourse.yakirproject.MathServlet</servlet-class>
+		<servlet-class>com.mycompany.stock.servlet.MathServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>MathServlet</servlet-name>
@@ -24,7 +24,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	
 	<servlet>
 		<servlet-name>AdvancedMathServlet</servlet-name>
-		<servlet-class>com.myorg.javacourse.yakirproject.AdvancedMathServlet</servlet-class>
+		<servlet-class>com.mycompany.stock.servlet.AdvancedMathServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>AdvancedMathServlet</servlet-name>
@@ -33,7 +33,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	
 	<servlet>
 		<servlet-name>StockDetailsServlet</servlet-name>
-		<servlet-class>com.myorg.javacourse.yakirproject.StockDetailsServlet</servlet-class>
+		<servlet-class>com.mycompany.stock.servlet.StockDetailsServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>StockDetailsServlet</servlet-name>

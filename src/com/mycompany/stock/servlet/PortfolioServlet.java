@@ -16,18 +16,19 @@ public class PortfolioServlet extends HttpServlet {
 		resp.setContentType("text/html");
 		PortfolioManager portfolioManager = new PortfolioManager();
 		
-		//----set portfolio1
+		//----Hw 6 demand (sync)
+		/*----set portfolio1
 		Portfolio portfolio1 = portfolioManager.getPortfolio();
 		
-		//----set portfolio2
+		/----set portfolio2
 		Portfolio portfolio2 = new Portfolio (portfolio1);
 		portfolio2.setTitle("portfolio#2");
 		
-		//----Hw 6 demand (sync)
+		
 		resp.getWriter().println(portfolio1.getHtmlString());
 		resp.getWriter().println(portfolio2.getHtmlString());
 		
-		portfolio2.removeFirstStockOnly();
+		portfolio1.removeStock(portfolio1.getStocks()[0].getSymbol());
 
 		resp.getWriter().println("-----------------------------------------------------");
 		resp.getWriter().println(portfolio1.getHtmlString());
@@ -38,6 +39,22 @@ public class PortfolioServlet extends HttpServlet {
 		resp.getWriter().println("-----------------------------------------------------");
 		resp.getWriter().println(portfolio1.getHtmlString());
 		resp.getWriter().println(portfolio2.getHtmlString());
-	
+		*/
+		
+		//----Hw 7 demand
+		//----set portfolio
+		Portfolio myPortfolio = portfolioManager.getPortfolio();
+		myPortfolio.setTitle("Exercise 7 portfolio");
+		myPortfolio.setBalance(10000);
+		
+		myPortfolio.createInstanceAndBuyNewStock("PIH", 10f, 8.5f, new int[]{2014,11,15}, 20);
+		myPortfolio.createInstanceAndBuyNewStock("AAL", 30f, 25.5f, new int[]{2014,11,15}, 30);
+		myPortfolio.createInstanceAndBuyNewStock("CAAS", 20f, 15.5f, new int[]{2014,11,15}, 40);
+		
+		myPortfolio.sellStock("AAL", -1);
+		myPortfolio.removeStock("CAAS");
+		
+		resp.getWriter().println(myPortfolio.getHtmlString());
+		
 	}
 }

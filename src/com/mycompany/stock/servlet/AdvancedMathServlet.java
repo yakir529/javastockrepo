@@ -1,4 +1,4 @@
-package com.myorg.javacourse.yakirproject;
+package com.mycompany.stock.servlet;
 
 import java.io.IOException;
 import java.lang.Math;
