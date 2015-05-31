@@ -1,9 +1,11 @@
 package com.mycompany.app.model;
 import java.util.Date;
 
+import org.algo.model.StockInterface;
+
 import com.mycompany.app.model.Portfolio.ALGO_RECOMMENDATION;
 
-public class Stock {
+public class Stock implements StockInterface {
 	//----Private Const
 	/*----Ex 7 demand
     private final static int BUY = 0;
@@ -38,7 +40,16 @@ public class Stock {
 		this.setStockQuantity(stk2cpy.getStockQuantity());
 	}
 
-    //--------Getters & Setters
+    public Stock() {
+    	this.symbol = new String();
+	    this.ask = 0;
+	    this.bid = 0;
+	    this.date = new Date();
+	    this.stockQuantity = 0;
+	    this.recommendation = ALGO_RECOMMENDATION.HOLD;
+	}
+
+	//--------Getters & Setters
 	public String getSymbol() {
 		return symbol;
 	}

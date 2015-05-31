@@ -1,4 +1,4 @@
-package com.mycompany.stock.servlet;
+package com.mycompany.app.servlet;
 import java.io.IOException;
 
 import javax.servlet.http.HttpServlet;

@@ -2,7 +2,10 @@ package com.mycompany.app.model;
 
 import java.util.Calendar;
 
-public class Portfolio {
+import org.algo.model.PortfolioInterface;
+import org.algo.model.StockInterface;
+
+public class Portfolio implements PortfolioInterface{
 	//----/ Private Const
 	private final static int MAX_PORTFOLIO_SIZE = 5;
 	
@@ -28,6 +31,16 @@ public class Portfolio {
 		}
 	}
 	
+	public Portfolio(Stock[] stockArray) {
+		// TODO Auto-generated constructor stub
+		this.title = new String();
+		this.stocks = new Stock[MAX_PORTFOLIO_SIZE];
+		for (int i=0; i<stockArray.length; i++){
+			addStock(stockArray[i]);
+		}
+		this.balance = 0;
+	}
+
 	//----/ Methods
 	public boolean createInstanceAndBuyNewStock(String newSymbol, float newAsk, float newBid, int[] newDate, int newQuantity){
 		Calendar cal = Calendar.getInstance();
@@ -100,6 +113,13 @@ public class Portfolio {
 			}
 		}return false;
 	}
+	
+	public StockInterface findStock(String symbol){
+		for (int i=0; i<getPortfolioSize(); i++){
+			if (getStocks()[i].getSymbol().equals(symbol)) return getStocks()[i];
+		}return null;
+	}
+	
 
 	//--------/ Getters & Setters
 	public String getTitle() {
