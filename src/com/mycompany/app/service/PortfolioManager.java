@@ -7,6 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.mycompany.app.exception.BalanceException;
+import com.mycompany.app.exception.PortfolioFullException;
+import com.mycompany.app.exception.StockAlreadyExistsException;
+import com.mycompany.app.exception.StockNotExistsException;
 import com.mycompany.app.model.Portfolio;
 import com.mycompany.app.model.Stock;
 
@@ -35,7 +39,13 @@ public class PortfolioManager implements PortfolioManagerInterface {
 
 	public PortfolioInterface getPortfolio() {
 		PortfolioDto portfolioDto = datastoreService.getPortfolilo();
-		return fromDto(portfolioDto);
+		try {
+			return fromDto(portfolioDto);
+		} catch (StockAlreadyExistsException | PortfolioFullException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return portfolioDto;
 	}
 
 	/**
@@ -124,9 +134,11 @@ public class PortfolioManager implements PortfolioManagerInterface {
 
 	/**
 	 * Add stock to portfolio 
+	 * @throws PortfolioFullException 
+	 * @throws StockAlreadyExistsException 
 	 */
 	@Override
-	public void addStock(String symbol) {
+	public void addStock(String symbol) throws StockAlreadyExistsException, PortfolioFullException {
 		Portfolio portfolio = (Portfolio) getPortfolio();
 
 		try {
@@ -231,8 +243,10 @@ public class PortfolioManager implements PortfolioManagerInterface {
 	 * fromDto - converts portfolioDto to Portfolio
 	 * @param dto
 	 * @return portfolio
+	 * @throws PortfolioFullException 
+	 * @throws StockAlreadyExistsException 
 	 */
-	private Portfolio fromDto(PortfolioDto dto) {
+	private Portfolio fromDto(PortfolioDto dto) throws StockAlreadyExistsException, PortfolioFullException {
 		StockDto[] stocks = dto.getStocks();
 		Portfolio ret;
 		if(stocks == null) {
@@ -277,8 +291,10 @@ public class PortfolioManager implements PortfolioManagerInterface {
 	 * A method that returns a new instance of Portfolio copied from another instance.
 	 * @param portfolio		Portfolio to copy.
 	 * @return a new Portfolio object with the same values as the one given.
+	 * @throws PortfolioFullException 
+	 * @throws StockAlreadyExistsException 
 	 */
-	public Portfolio duplicatePortfolio(Portfolio portfolio) {
+	public Portfolio duplicatePortfolio(Portfolio portfolio) throws StockAlreadyExistsException, PortfolioFullException {
 		Portfolio copyPortfolio = new Portfolio(portfolio);
 		return copyPortfolio;
 	}
@@ -304,9 +320,11 @@ public class PortfolioManager implements PortfolioManagerInterface {
 
 	/**
 	 * Remove stock
+	 * @throws BalanceException 
+	 * @throws StockNotExistsException 
 	 */
 	@Override
-	public void removeStock(String symbol) { 
+	public void removeStock(String symbol) throws StockNotExistsException, BalanceException { 
 		Portfolio portfolio = (Portfolio) getPortfolio();
 		portfolio.removeStock(symbol);
 		flush(portfolio);
@@ -314,8 +332,9 @@ public class PortfolioManager implements PortfolioManagerInterface {
 
 	/**
 	 * update portfolio balance
+	 * @throws BalanceException 
 	 */
-	public void updateBalance(float value) { 
+	public void updateBalance(float value) throws BalanceException { 
 		Portfolio portfolio = (Portfolio) getPortfolio();
 		portfolio.updateBalance(value);
 		flush(portfolio);

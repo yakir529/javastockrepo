@@ -1,9 +1,12 @@
 package com.mycompany.app.model;
 
-import java.util.Calendar;
-
 import org.algo.model.PortfolioInterface;
 import org.algo.model.StockInterface;
+
+import com.mycompany.app.exception.BalanceException;
+import com.mycompany.app.exception.PortfolioFullException;
+import com.mycompany.app.exception.StockAlreadyExistsException;
+import com.mycompany.app.exception.StockNotExistsException;
 
 public class Portfolio implements PortfolioInterface{
 	//----/ Private Const
@@ -22,7 +25,7 @@ public class Portfolio implements PortfolioInterface{
 		stocks = new Stock[MAX_PORTFOLIO_SIZE];
 	}
 	
-	public Portfolio (Portfolio port2cpy){
+	public Portfolio (Portfolio port2cpy) throws StockAlreadyExistsException, PortfolioFullException{
 		setTitle(port2cpy.getTitle());
 		setStocks();
 		for (int i=0; i<port2cpy.getPortfolioSize(); i++){
@@ -31,7 +34,7 @@ public class Portfolio implements PortfolioInterface{
 		}
 	}
 	
-	public Portfolio(Stock[] stockArray) {
+	public Portfolio(Stock[] stockArray) throws StockAlreadyExistsException, PortfolioFullException {
 		// TODO Auto-generated constructor stub
 		this.title = new String();
 		this.stocks = new Stock[MAX_PORTFOLIO_SIZE];
@@ -42,6 +45,7 @@ public class Portfolio implements PortfolioInterface{
 	}
 
 	//----/ Methods
+	/*
 	public boolean createInstanceAndBuyNewStock(String newSymbol, float newAsk, float newBid, int[] newDate, int newQuantity){
 		Calendar cal = Calendar.getInstance();
 		cal.set(newDate[0],newDate[1],newDate[2]);//----Date format-> {yyyy,dd,mm}
@@ -56,8 +60,17 @@ public class Portfolio implements PortfolioInterface{
 			portfolioSize++;
 		}else System.out.println("Can’t add new stock, portfolio can have only "+MAX_PORTFOLIO_SIZE+" stocks.");
 	}
+	*/
+	public void addStock(Stock stk2Add) throws StockAlreadyExistsException,PortfolioFullException {
+		if (this.getPortfolioSize() == MAX_PORTFOLIO_SIZE) throw new PortfolioFullException(this.getPortfolioSize());
+		if (!ifStockExists(stk2Add.getSymbol())){
+			stk2Add.setStockQuantity(0);
+			stocks[getPortfolioSize()] = stk2Add;
+			portfolioSize++;
+		}else throw new StockAlreadyExistsException(stk2Add.getSymbol());
+	}
 	
-	public boolean removeStock (String smbl){
+	/*public boolean removeStock (String smbl){
 		if (ifStockExists(smbl)){
 			for (int i=1; i<=getPortfolioSize(); i++){
 				if (stocks[i-1].getSymbol().equals(smbl)){
@@ -68,11 +81,30 @@ public class Portfolio implements PortfolioInterface{
 				}
 			}return true;
 		}else return false;
+	}*/
+	public void removeStock (String smbl) throws StockNotExistsException, BalanceException{
+		if (ifStockExists(smbl)){
+			for (int i=1; i<=getPortfolioSize(); i++){
+				if (stocks[i-1].getSymbol().equals(smbl)){
+					sellStock(smbl, -1);
+					getStocks()[i-1] = getStocks()[getPortfolioSize()-1];
+					getStocks()[getPortfolioSize()-1] = null;
+					portfolioSize--;
+					break;
+				}
+			}
+		}else throw new StockNotExistsException(smbl);
 	}
-	
+	/*
 	public void updateBalance(float amount){
 		setBalance(getBalance()+amount);
 		if (getBalance()< 0) setBalance(0);
+	}
+	*/
+	
+	public void updateBalance(float amount) throws BalanceException{
+		if (getBalance()+amount < 0) throw new BalanceException();
+		else setBalance(getBalance()+amount);
 	}
 	
 	public boolean ifStockExists(String smbl){
@@ -82,7 +114,7 @@ public class Portfolio implements PortfolioInterface{
 			}
 		}return false;
 	}
-	
+	/*
 	public boolean sellStock(String smbl, int quantity){
 		for (int i=0; i < getPortfolioSize(); i++){
 			if (getStocks()[i].getSymbol().equals(smbl)){//----finding the stock
@@ -96,8 +128,22 @@ public class Portfolio implements PortfolioInterface{
 				break;
 			}
 		}return false;
+	}*/
+	public void sellStock(String smbl, int quantity) throws BalanceException{
+		for (int i=0; i < getPortfolioSize(); i++){
+			if (getStocks()[i].getSymbol().equals(smbl)){//----finding the stock
+				if (quantity == -1) quantity = getStocks()[i].getStockQuantity();//----if sell all quantity
+				if ((getStocks()[i].getStockQuantity() >= quantity) && (quantity >= 0)){//----if quantity is valid
+					updateBalance(getStocks()[i].getStockQuantity()*getStocks()[i].getBid());//----update balance
+					getStocks()[i].setStockQuantity(getStocks()[i].getStockQuantity() - quantity);//----update quantity
+					//if (this.getStocks()[i].getStockQuantity() == 0) this.removeStock(smbl);
+					
+				}else throw new BalanceException();
+				break;
+			}
+		}
 	}
-	
+	/*
 	public boolean buyStock(Stock stk, int quantity){
 		if ((getBalance() < stk.getAsk()) || ((getBalance()/stk.getAsk() < quantity))){//---- if user don't have money
 			System.out.println("Not enough balance to complete purchase.");
@@ -112,6 +158,22 @@ public class Portfolio implements PortfolioInterface{
 				}
 			}
 		}return false;
+	}
+	*/
+	public void buyStock(Stock stk, int quantity) throws BalanceException, StockAlreadyExistsException, PortfolioFullException{
+		if ((getBalance() < stk.getAsk()) || ((getBalance()/stk.getAsk() < quantity))){//---- if user don't have money
+			throw new BalanceException();
+		}else {
+			if (quantity == -1) quantity = (int)(getBalance()/stk.getAsk());
+			for (int i=0; i<=getPortfolioSize(); i++){
+				if (i == getPortfolioSize()) addStock(stk);//----if stocks arr is empty or stock not found
+				if (getStocks()[i].getSymbol().equals(stk.getSymbol())){
+					updateBalance((quantity*stk.getAsk())*(-1));
+					getStocks()[i].setStockQuantity(getStocks()[i].getStockQuantity() + quantity);
+					
+				}
+			}
+		}
 	}
 	
 	public StockInterface findStock(String symbol){
